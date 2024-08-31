@@ -1,5 +1,5 @@
-import * as fs from "node:fs/promises";
 import path from "node:path";
+import * as fs from "node:fs/promises";
 
 const booksPath = path.resolve("data", "books.json");
 
@@ -7,16 +7,16 @@ const rewriteBooks = async (newBooks) => {
   await fs.writeFile(booksPath, JSON.stringify(newBooks, null, 2));
 };
 
-export const getBooks = async () => {
+export const getAllBooks = async () => {
   const allBooks = await fs.readFile(booksPath);
 
   return JSON.parse(allBooks);
 };
 
-export async function addBook({ title, author, isBorrowed }) {
-  const books = await getBooks();
+export async function addBook({ title, author, isBorrowed = false }) {
+  const books = await getAllBooks();
   const newBook = {
-    isbn: Date.now(),
+    isbn: Date.now().toString(),
     title,
     author,
     isBorrowed,
@@ -29,7 +29,7 @@ export async function addBook({ title, author, isBorrowed }) {
 }
 
 export const updateBook = async (isbn, data) => {
-  const books = await getBooks();
+  const books = await getAllBooks();
   const index = books.findIndex((book) => book.isbn === isbn);
 
   if (index === -1) return null;
@@ -40,20 +40,20 @@ export const updateBook = async (isbn, data) => {
   return books[index];
 };
 
-export const removeBook = async (isbn) => {
-  const books = await getBooks();
+export const deleteBook = async (isbn) => {
+  const books = await getAllBooks();
   const index = books.findIndex((book) => book.isbn === isbn);
 
   if (index === -1) return null;
 
-  const removedBook = books.splice(index, i);
+  const removedBook = books.splice(index, 1);
   await rewriteBooks(books);
 
   return removedBook;
 };
 
-export const updateIsBorrowed = async (isbn, isBorrowed) => {
-  const books = await getBooks();
+export const markAsBorrowed = async (isbn, isBorrowed) => {
+  const books = await getAllBooks();
   const index = books.findIndex((book) => book.isbn === isbn);
 
   if (index === -1) return null;
@@ -64,13 +64,16 @@ export const updateIsBorrowed = async (isbn, isBorrowed) => {
   return books[index];
 };
 
-export const getBookByQuery = async (query) => {
-  const books = await getBooks();
+export const searchBooks = async (query) => {
+  const books = await getAllBooks();
 
   if (books.length === 0) return [];
 
   const queriedBooks = books.filter((book) => {
-    book.title.contains(query) || book.isbn.contains(query);
+    return (
+      book.title.toLowerCase().includes(query.toLowerCase()) ||
+      book.isbn.toLowerCase().includes(query.toLowerCase())
+    );
   });
 
   return queriedBooks;
