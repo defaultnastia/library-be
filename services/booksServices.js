@@ -13,10 +13,10 @@ export const getAllBooks = async () => {
   return JSON.parse(allBooks);
 };
 
-export async function addBook({ title, author, isBorrowed = false }) {
+export async function addBook({ title, author, isbn, isBorrowed = false }) {
   const books = await getAllBooks();
   const newBook = {
-    isbn: Date.now().toString(),
+    isbn,
     title,
     author,
     isBorrowed,

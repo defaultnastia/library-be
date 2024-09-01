@@ -118,5 +118,11 @@
     "title": "Madame Bovary",
     "author": "Gustave Flaubert",
     "isBorrowed": true
+  },
+  {
+    "isbn": "978-3-16-148410-0",
+    "title": "Treasure Island",
+    "author": "Robert Louis Stevenson",
+    "isBorrowed": false
   }
 ]
