@@ -1,5 +1,6 @@
 import path from "node:path";
 import * as fs from "node:fs/promises";
+import requestError from "../helpers/requestError.js";
 
 const booksPath = path.resolve("data", "books.json");
 
@@ -13,8 +14,23 @@ export const getAllBooks = async () => {
   return JSON.parse(allBooks);
 };
 
+const isBookUnique = (isbn, books) => {
+  const existingBook = books.find((book) =>
+    book.isbn.toLowerCase().includes(isbn.toLowerCase())
+  );
+
+  if (existingBook) return false;
+
+  return true;
+};
+
 export async function addBook({ title, author, isbn, isBorrowed = false }) {
   const books = await getAllBooks();
+  const isUnique = isBookUnique(isbn, books);
+
+  if (!isUnique)
+    throw requestError(409, "The ISBN of the book has to be unique");
+
   const newBook = {
     isbn,
     title,
