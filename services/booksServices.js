@@ -15,8 +15,8 @@ export const getAllBooks = async () => {
 };
 
 const isBookUnique = (isbn, books) => {
-  const existingBook = books.find((book) =>
-    book.isbn.toLowerCase().includes(isbn.toLowerCase())
+  const existingBook = books.find(
+    (book) => book.isbn.toLowerCase() === isbn.toLowerCase()
   );
 
   if (existingBook) return false;
@@ -46,10 +46,6 @@ export async function addBook({ title, author, isbn, isBorrowed = false }) {
 
 export const updateBook = async (isbn, data) => {
   const books = await getAllBooks();
-
-  const isUnique = isBookUnique(isbn, books);
-  if (!isUnique)
-    throw requestError(409, "The ISBN of the book has to be unique");
 
   const index = books.findIndex((book) => book.isbn === isbn);
   if (index === -1) return null;
